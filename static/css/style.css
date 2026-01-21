@@ -1,0 +1,12 @@
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    justify-content: center;
+}

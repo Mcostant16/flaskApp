@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2>Hello, {{ user.name }}</h2>
+        <p><strong>Role:</strong> {{ user.role or "Not provided" }}</p>
+        <p class="text-muted">
+            Submitted on {{ user.created_at.strftime("%Y-%m-%d %H:%M") }}
+        </p>
+
+        <a href="/" class="btn btn-secondary mt-3">Back</a>
+    </div>
+</div>
+{% endblock %}
+

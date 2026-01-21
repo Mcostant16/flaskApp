@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">All Employees</h2>
+
+{% for user in users %}
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <h5>{{ user.name }}</h5>
+
+        <p><strong>Role:</strong> {{ user.role or "Not provided" }}</p>
+
+        <p class="text-muted">
+            Submitted on {{ user.created_at.strftime("%Y-%m-%d %H:%M") }}
+        </p>
+    </div>
+</div>
+{% else %}
+<p>No users found.</p>
+{% endfor %}
+
+<a href="/" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}
+
+
