@@ -10,3 +10,13 @@ body {
     font-weight: 600;
     justify-content: center;
 }
+
+#example {
+    width: 100%;
+    height: 400px;
+    margin: 20px auto;
+}
+.ht-theme-main .htCore {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
