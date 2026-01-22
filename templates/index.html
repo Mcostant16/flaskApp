@@ -28,4 +28,15 @@
 <div id="example" class="ht-theme-main"></div>
 <div id="example2" class="ht-theme-main"></div>
 
+
 {% endblock %}
+
+
+
+{% block scripts %}
+    {{ super() }}  <!-- keeps Bootstrap + Handsontable from base.html -->
+ <script src="{{ url_for('static', filename='js/handsontable.js') }}"></script>
+{% endblock %}
+
+
+

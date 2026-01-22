@@ -41,6 +41,15 @@ def employees():
         print(user)
     return render_template("employees.html", users=users)
 
+@app.route("/table")
+def table():
+    users = UserSubmission.query.all()
+
+    # Convert ORM objects to simple lists
+    data = [[u.id, u.name, u.role]for u in users]
+    
+    #return "<h2>Table HTML Page.</p>"
+    return render_template("table.html",table_data=data)
 
 
 

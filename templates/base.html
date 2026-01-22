@@ -39,6 +39,9 @@
                     <a class="nav-link" href="/employees">Employees</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/table">Table</a>
+                </li>
+                 <li class="nav-item">
                     <a class="nav-link" href="/about">About</a>
                 </li>
             </ul>
@@ -51,10 +54,11 @@
 <div class="container my-5">
     {% block content %}{% endblock %}
 </div>
-
+{% block scripts %}
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/handsontable.full.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/handsontable.js') }}"></script>
+{% endblock %}
+
 </body>
 </html>

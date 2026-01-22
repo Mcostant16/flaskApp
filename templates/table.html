@@ -1,0 +1,25 @@
+
+
+{% extends "base.html" %}
+
+
+{% block content %}
+<div id="tableExample" class="ht-theme-main"></div>
+{% endblock %}
+
+
+
+{% block scripts %}
+    {{ super() }}  <!-- keeps Bootstrap + Handsontable from base.html -->
+    <script src="{{ url_for('static', filename='js/employeestable.js') }}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
