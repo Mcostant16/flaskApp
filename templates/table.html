@@ -11,7 +11,10 @@
 
 {% block scripts %}
     {{ super() }}  <!-- keeps Bootstrap + Handsontable from base.html -->
+    <script> window.employeesData = {{ table_data|tojson }}; </script>
+
     <script src="{{ url_for('static', filename='js/employeestable.js') }}"></script>
+    
 {% endblock %}
 
 

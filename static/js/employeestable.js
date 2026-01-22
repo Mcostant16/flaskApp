@@ -1,5 +1,5 @@
  //Example 3 - Flask + Jinja + JS
- // const tableData = {{ table_data | tojson }};
+ //const tableData = {{ table_data | tojson }};
 
 console.log('example:', document.getElementById('tableExample'));
    // Generate a 20x20 empty array
@@ -13,12 +13,23 @@ console.log('example:', document.getElementById('tableExample'));
 if (!container3) {
     console.error('Container element not found!');
 } else {
+    console.log('Container element found:', window.employeesData);
   const hot3 =       
   new Handsontable(container3, {
-    data: data22,
+    height: 400,
+    data: window.employeesData || [],
+    colHeaders: ['ID', 'Name', 'Role'],
+    columns: [
+      { data: 'id', type: 'numeric', readOnly: true },
+      { data: 'name', type: 'text' },
+      { data: 'role', type: 'text' },
+    ],
+
     rowHeaders: true,
     colHeaders: true,
     licenseKey: 'non-commercial-and-evaluation'
   });
+
+    window.employeesHot = hot3;
 }
 

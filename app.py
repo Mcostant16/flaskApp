@@ -45,8 +45,9 @@ def employees():
 def table():
     users = UserSubmission.query.all()
 
-    # Convert ORM objects to simple lists
-    data = [[u.id, u.name, u.role]for u in users]
+   # Convert ORM objects  Python dicts
+    data = [u.to_dict() for u in users]
+
     
     #return "<h2>Table HTML Page.</p>"
     return render_template("table.html",table_data=data)
