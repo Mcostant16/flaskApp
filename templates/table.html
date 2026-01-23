@@ -2,6 +2,7 @@
 
 {% extends "base.html" %}
 
+
 {% block title %}Table Data{% endblock %}
 
 {% block content %}
@@ -55,11 +56,13 @@
         </p>
 
         <form method="POST" class="mt-4">
+             {{ csrf_token() }}
             <button class="btn btn-primary">Submit</button>
         </form>
     </div>
 </div>
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 {% endblock %}
 
