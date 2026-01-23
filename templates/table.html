@@ -2,9 +2,65 @@
 
 {% extends "base.html" %}
 
+{% block title %}Table Data{% endblock %}
 
 {% block content %}
 <div id="tableExample" class="ht-theme-main"></div>
+
+<div id="trainingSubmissions" class="ht-theme-main"></div>
+
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="saveToast" class="toast">
+    <div class="toast-body bg-success text-white">
+      Data saved successfully!
+    </div>
+  </div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+</div>
+
+
+<!-- Save button -->
+<button id="saveBtn" type="button" class="btn btn-primary mt-3">
+  Save Changes
+</button>
+
+<!-- Bootstrap toast (bottom-right) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="saveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ✔ Data saved successfully!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+
+  <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="errorToastBody">
+        ⚠ Error saving data.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+<br>
+<br>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="card-title mb-3">Submit Training Information</h2>
+        <p class="text-muted">
+            This is a form for submitting training information.
+        </p>
+
+        <form method="POST" class="mt-4">
+            <button class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+
 {% endblock %}
 
 
