@@ -7,7 +7,8 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 from flask_wtf.csrf import CSRFProtect
 from models import UserSubmission, User  # import User here
 from werkzeug.exceptions import BadRequest
-from sqlalchemy import select
+from sqlalchemy import select, func
+from datetime import datetime, timedelta
 
 
 
@@ -43,11 +44,107 @@ def index():
     if request.method == "POST":
         name = request.form.get("name")
         role = request.form.get("role")
-        record = UserSubmission(name=name, role=role)
-        db.session.add(record)
-        db.session.commit()
-        return redirect(url_for("results", user_id=record.id))
-    return render_template("index.html")
+        if name:
+            record = UserSubmission(name=name, role=role)
+            db.session.add(record)
+            db.session.commit()
+            return redirect(url_for("results", user_id=record.id))
+
+    # Recent rows for the table
+    recent = (
+        UserSubmission.query.order_by(UserSubmission.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    # ---- Metrics for SQLite ----
+    total_users = db.session.scalar(db.select(func.count(UserSubmission.id))) or 0
+
+    # Count in current month using SQLite strftime('%Y-%m', column)
+    this_month = db.session.scalar(
+        db.select(func.count(UserSubmission.id)).where(
+            func.strftime("%Y-%m", UserSubmission.created_at) ==
+            datetime.utcnow().strftime("%Y-%m")
+        )
+    ) or 0
+
+    last_7_days = db.session.scalar(
+        db.select(func.count(UserSubmission.id)).where(
+            UserSubmission.created_at >= datetime.utcnow() - timedelta(days=7)
+        )
+    ) or 0
+
+    unique_roles = db.session.scalar(
+        db.select(func.count(func.distinct(UserSubmission.role))).where(
+            UserSubmission.role.isnot(None)
+        )
+    ) or 0
+
+    metrics = {
+        "total_users": total_users,
+        "this_month": this_month,
+        "last_7_days": last_7_days,
+        "unique_roles": unique_roles,
+    }
+    
+    # === GRAPH DATA ===
+
+    # Submissions per month (last 6 months)
+    six_months_ago = datetime.utcnow() - timedelta(days=180)
+    monthly_rows = db.session.execute(
+        db.select(
+            func.strftime('%Y-%m', UserSubmission.created_at).label('month'),
+            func.count(UserSubmission.id)
+        )
+        .where(UserSubmission.created_at >= six_months_ago)
+        .group_by('month')
+        .order_by('month')
+    ).all()
+
+    months = [row[0] for row in monthly_rows]
+    counts = [row[1] for row in monthly_rows]
+
+    # Last 7 days activity
+    seven_days = datetime.utcnow() - timedelta(days=7)
+    daily_rows = db.session.execute(
+        db.select(
+            func.strftime('%Y-%m-%d', UserSubmission.created_at).label('day'),
+            func.count(UserSubmission.id)
+        )
+        .where(UserSubmission.created_at >= seven_days)
+        .group_by('day')
+        .order_by('day')
+    ).all()
+
+    daily_labels = [row[0] for row in daily_rows]
+    daily_counts = [row[1] for row in daily_rows]
+
+    # Role distribution
+    role_rows = db.session.execute(
+        db.select(
+            UserSubmission.role,
+            func.count(UserSubmission.id)
+        )
+        .where(UserSubmission.role.isnot(None))
+        .group_by(UserSubmission.role)
+    ).all()
+
+    role_labels = [row[0] for row in role_rows]
+    role_counts = [row[1] for row in role_rows]
+    print("hello here are the counts", role_counts)
+
+
+    return render_template(
+        "index.html",
+        recent=recent,
+        metrics=metrics,
+        months=months,
+        counts=counts,
+        daily_labels=daily_labels,
+        daily_counts=daily_counts,
+        role_labels=role_labels,
+        role_counts=role_counts
+)
 
 
 
@@ -67,15 +164,22 @@ def employees():
         print(user)
     return render_template("employees.html", users=users)
 
-@app.route("/table")
+@app.route("/table",methods=["GET", "POST"])
 @login_required  # enforce authentication
 def table():
+
+    if request.method == "POST":
+        name = request.form.get("name")
+        role = request.form.get("role")
+        record = UserSubmission(name=name, role=role)
+        db.session.add(record)
+        db.session.commit()
+        return redirect(url_for("results", user_id=record.id))
+    
     users = UserSubmission.query.all()
 
    # Convert ORM objects  Python dicts
     data = [u.to_dict() for u in users]
-
-    
     #return "<h2>Table HTML Page.</p>"
     return render_template("table.html",table_data=data)
 
@@ -102,6 +206,19 @@ def save_employees():
         db.session.rollback()
         return jsonify({"error": "DB error"}), 500
 
+
+@app.post("/employees/delete/<int:user_id>")
+@login_required
+def delete_user(user_id):
+    user = db.session.get(UserSubmission, user_id)
+    if not user:
+        return "User not found", 404
+
+    db.session.delete(user)
+    db.session.commit()
+    flash("Employee deleted successfully.", "success")
+
+    return redirect(url_for("employees"))
 
 # ---------- Auth routes ----------
 
@@ -147,7 +264,7 @@ def login():
 
         login_user(user, remember=remember)
         flash("Logged in successfully.", "success")
-        next_url = request.args.get("next") or url_for("employees")
+        next_url = request.args.get("next") or url_for("index")
         return redirect(next_url)
 
     return render_template("login.html")

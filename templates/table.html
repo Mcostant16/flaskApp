@@ -6,6 +6,31 @@
 {% block title %}Table Data{% endblock %}
 
 {% block content %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="card-title mb-3">Welcome</h2>
+        <p class="text-muted">
+            This is a clean, polished Flask application suitable for desktop packaging.
+        </p>
+
+        <form method="POST" class="mt-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                <label class="form-label">Your Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Your Role</label>
+                <input type="text" name="role" class="form-control" placeholder="Analyst, Instructor, Developer">
+            </div>
+
+            <button class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
 <div id="tableExample" class="ht-theme-main"></div>
 
 <div id="trainingSubmissions" class="ht-theme-main"></div>

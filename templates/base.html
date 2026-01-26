@@ -38,12 +38,32 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/">Home</a>
                 </li>
-                <li class="nav-item">
+                {% if current_user.is_authenticated %}
+                  <li class="nav-item">
                     <a class="nav-link" href="/employees">Employees</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/table">Table</a>
                 </li>
+                 <!-- <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li> -->        
+                <li class="nav-item">
+                <a href="#" class="nav-link"
+                    onclick="document.getElementById('logoutForm').submit(); return false;">
+                    Logout
+                </a>
+                </li>
+                <!-- Hidden form anywhere inside the navbar (e.g., right after the UL) -->
+                <form id="logoutForm" action="/logout" method="POST" class="d-none">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                </form>
+                {% else %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                  </li>
+                {% endif %}
+               
                  <li class="nav-item">
                     <a class="nav-link" href="/about">About</a>
                 </li>
@@ -58,7 +78,6 @@
     {% block content %}{% endblock %}
 </div>
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/handsontable.full.min.js') }}"></script>
 {% endblock %}

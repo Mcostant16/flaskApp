@@ -26,3 +26,57 @@ body {
     height: 400px;
     margin: 20px auto;
 }
+
+
+/* Subtle gradient hero background */
+.hero-gradient {
+background: linear-gradient(135deg, #0d6efd 0%, #3f8cff 35%, #68a6ff 100%);
+color: #fff;
+}
+/* Soft card shadow for a premium feel */
+.shadow-soft {
+box-shadow: 0 .25rem .75rem rgba(0,0,0,.05);
+border: 1px solid rgba(0,0,0,.06);
+border-radius: .75rem;
+}
+/* Muted section background */
+.section-muted {
+background: #f8f9fb;
+}
+/* Small helper for vertical rhythms */
+.lh-tight { line-height: 1.1; }
+
+.employee-card {
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    transition: all .25s ease;
+    background: #ffffff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .06);
+}
+.employee-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .12);
+    border-color: #cfd8ff;
+}
+.employee-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f5f5f5;
+    margin-bottom: .1rem;
+}
+.employee-role {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #c9f3cf;
+    margin-bottom: .1rem;
+}
+.employee-meta {
+    font-size: .9rem;
+    color: #6c757d;
+}
+.delete-btn {
+    transition: background .2s ease, transform .2s ease;
+}
+.delete-btn:hover {
+    transform: scale(1.05);
+}
