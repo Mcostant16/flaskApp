@@ -56,7 +56,8 @@
         </p>
 
         <form method="POST" class="mt-4">
-             {{ csrf_token() }}
+            <!-- CSRF token for JS Example-->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="btn btn-primary">Submit</button>
         </form>
     </div>
