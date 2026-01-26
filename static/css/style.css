@@ -33,6 +33,32 @@ body {
 background: linear-gradient(135deg, #0d6efd 0%, #3f8cff 35%, #68a6ff 100%);
 color: #fff;
 }
+
+.hero-gradient2 {
+  background: linear-gradient(135deg, #0ba360 0%, #4fd67b 50%, #7fffd4 100%);
+  color: #fff;
+}
+
+.hero-gradient3 {
+  background: linear-gradient(135deg, #ff7a18 0%, #ff9e2c 50%, #ffd56b 100%);
+  color: #fff;
+}
+
+.hero-gradient4 {
+  background: linear-gradient(135deg, #6a11cb 0%, #8e3efc 50%, #c084fc 100%);
+  color: #fff;
+}
+
+.hero-gradient5 {
+  background: linear-gradient(135deg, #343a40 0%, #6c757d 50%, #adb5bd 100%);
+  color: #fff;
+}
+
+.hero-gradient6 {
+  background: linear-gradient(135deg, #008080 0%, #20b2aa 50%, #7fffd4 100%);
+  color: #fff;
+}
+
 /* Soft card shadow for a premium feel */
 .shadow-soft {
 box-shadow: 0 .25rem .75rem rgba(0,0,0,.05);
@@ -68,6 +94,13 @@ background: #f8f9fb;
     font-size: 1.15rem;
     font-weight: bold;
     color: #c9f3cf;
+    margin-bottom: .1rem;
+}
+
+.employee-submitted {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #ebc9f3;
     margin-bottom: .1rem;
 }
 .employee-meta {
