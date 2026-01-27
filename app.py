@@ -42,6 +42,13 @@ def unauthorized():
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
+# Only allow authenticated users to perform the write
+        if not current_user.is_authenticated:
+            # Option A: redirect to login with a message
+            flash("Please log in to submit.", "warning")
+            return redirect(url_for("login", next=url_for("index")))
+            # Option B (API style): abort with 401/403
+            # abort(401)  # or abort(403)
         name = request.form.get("name")
         role = request.form.get("role")
         if name:
