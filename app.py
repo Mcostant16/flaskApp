@@ -10,6 +10,7 @@ from werkzeug.exceptions import BadRequest
 from sqlalchemy import select, func
 from datetime import datetime, timedelta
 import os
+from dateutil import parser as dtparse  # pip install python-dateutil (or parse manually)
 
 
 
@@ -26,6 +27,9 @@ csrf.init_app(app)
 login_manager.login_view = "login"  # endpoint name defined below
 login_manager.init_app(app)
 @login_manager.user_loader
+def load_user(user_id):
+    # standard loader for Flask-Login
+    return db.session.get(User, int(user_id))
 
 def print_submissions(*args, **kwargs):
     print("Training Submissions:")
@@ -33,10 +37,6 @@ def print_submissions(*args, **kwargs):
     for row in training:
         print(row.id, row.email, row.user, row.training, row.train_date, row.status, row.created_at)
     print(training)
-
-def load_user(user_id):
-    # standard loader for Flask-Login
-    return db.session.get(User, int(user_id))
 
 
 @login_manager.unauthorized_handler
@@ -147,6 +147,7 @@ def index():
     role_labels = [row[0] for row in role_rows]
     role_counts = [row[1] for row in role_rows]
     print("hello here are the counts", role_counts)
+    print_submissions()
 
 
     return render_template(
@@ -210,17 +211,44 @@ def save_employees():
     rows = request.get_json()
     if not isinstance(rows, list):
         return jsonify({"error": "Array required"}), 400
+    
+    # Normalize to a list
+    if isinstance(rows, dict) and 'submissions' in rows:
+        items = rows['submissions']
+    elif isinstance(rows, list):
+        items = rows
+    else:
+        raise ValueError("JSON must be a list or an object with a 'submissions' array")
 
+    rows = []
+    for i, item in enumerate(items, start=1):
+        try:
+            submission_id = item['submission_id']
+            train_no = str(item['train_no'])
+            # Parse datetime (tolerant)
+            submitted_at = dtparse.parse(item['submitted_at'])
+            status = item.get('status', 'UNKNOWN')
+            payload = item.get('payload')  # can be any JSON-serializable object
+        except KeyError as e:
+            raise ValueError(f"Item {i} missing required field: {e}")
+
+        rows.append(TrainingSubmissions(
+            submission_id=submission_id,
+            train_no=train_no,
+            submitted_at=submitted_at,
+            status=status,
+            payload=payload
+        ))
+
+    # Bulk insert inside a transaction
     try:
-        for r in rows:
-            # validate and persist row...
-            pass
+        db.session.bulk_save_objects(rows)
         db.session.commit()
-        return jsonify({"status": "success"}), 200
+        return jsonify({"status": "success", "count": len(rows)}), 200
+
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"error": "DB error"}), 500
-
 
 @app.post("/employees/delete/<int:user_id>")
 @login_required

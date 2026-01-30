@@ -38,13 +38,14 @@ if (!container3) {
   const data22 = Array.from({ length: rows2 }, () => Array(cols2).fill(''));
 
   
-  const container4 = document.getElementById('trainingSubmissions');
+  const container4 = document.getElementById('userSubmissions');
+  let hot4;
 
 if (!container4) {
     console.error('Container element not found!');
 } else {
     console.log('Container element found:', window.employeesData);
-  const hot4 =       
+hot4 =       
   new Handsontable(container4, {
      data: data22,
       rowHeaders: true,
@@ -77,7 +78,8 @@ if (!container4) {
       saveBtn.textContent = 'Saving…';
 
       // Get data from Handsontable
-      const payload = hot3.getSourceData(); // array of objects [{id, name, role}, ...]
+      const payload = hot4.getSourceData(); // array of objects [{id, name, role}, ...]
+      console.log('Payload to save:', payload);
 
       const res = await fetch('/api/employees/save', {
         method: 'POST',
