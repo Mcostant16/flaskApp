@@ -40,7 +40,7 @@ class TrainingSubmissions(db.Model):
 
 
     def __repr__(self):
-        return f"<UserSubmission {self.name}>"
+        return f"<TrainingSubmissions{self.name}>"
     
 
 class User(UserMixin, db.Model):

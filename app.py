@@ -5,10 +5,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from extensions import db
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_wtf.csrf import CSRFProtect
-from models import UserSubmission, User  # import User here
+from models import UserSubmission, User, TrainingSubmissions  # import User here
 from werkzeug.exceptions import BadRequest
 from sqlalchemy import select, func
 from datetime import datetime, timedelta
+import os
 
 
 
@@ -25,6 +26,13 @@ csrf.init_app(app)
 login_manager.login_view = "login"  # endpoint name defined below
 login_manager.init_app(app)
 @login_manager.user_loader
+
+def print_submissions(*args, **kwargs):
+    print("Training Submissions:")
+    training = TrainingSubmissions.query.all()
+    for row in training:
+        print(row.id, row.email, row.user, row.training, row.train_date, row.status, row.created_at)
+    print(training)
 
 def load_user(user_id):
     # standard loader for Flask-Login
@@ -295,6 +303,11 @@ def about():
 #     app.run(host="127.0.0.1", port=5000)
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()  # creates tables if not exist
+    
+# Avoid double-running with the dev reloader
+    is_main_process = os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug
+    if is_main_process:
+        with app.app_context():
+            db.create_all()  # creates tables if not exist
+            print_submissions()
     app.run(host="127.0.0.1", port=5000, debug=True)
