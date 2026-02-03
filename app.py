@@ -223,21 +223,21 @@ def save_employees():
     rows = []
     for i, item in enumerate(items, start=1):
         try:
-            submission_id = item['submission_id']
-            train_no = str(item['train_no'])
+            email = item[0]
+            user = str(item[1])
+            training = item[2] 
             # Parse datetime (tolerant)
-            submitted_at = dtparse.parse(item['submitted_at'])
-            status = item.get('status', 'UNKNOWN')
-            payload = item.get('payload')  # can be any JSON-serializable object
+            train_date = dtparse.parse(item[3])
+            status = item[4] 
         except KeyError as e:
             raise ValueError(f"Item {i} missing required field: {e}")
 
         rows.append(TrainingSubmissions(
-            submission_id=submission_id,
-            train_no=train_no,
-            submitted_at=submitted_at,
-            status=status,
-            payload=payload
+            email=email,
+            user=user,
+            training=training,
+            train_date=train_date,
+            status=status
         ))
 
     # Bulk insert inside a transaction

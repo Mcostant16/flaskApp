@@ -39,8 +39,15 @@ class TrainingSubmissions(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
+    
     def __repr__(self):
-        return f"<TrainingSubmissions{self.name}>"
+        # short, debug-friendly
+        return f"<TrainingSubmissions id={self.id} email={self.email!r} status={self.status!r}>"
+
+    def __str__(self):
+        # human-friendly
+        return f"TrainingSubmission #{self.id} for {self.email} on {self.train_date:%Y-%m-%d}"
+
     
 
 class User(UserMixin, db.Model):
