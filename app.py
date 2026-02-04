@@ -162,7 +162,68 @@ def index():
         role_counts=role_counts
 )
 
+@app.route("/training/results",methods=["GET", "POST"])
+@login_required  # enforce authentication
+def training_results():
+    page = request.args.get('page', 1, type=int)
+    per_page = 25
+    rows = TrainingSubmissions.query.paginate(page=page, per_page=per_page)
+    return render_template("training_results.html", rows=rows)
 
+# routes.py
+from flask import redirect, url_for, flash
+from flask_wtf import CSRFProtect
+from sqlalchemy.exc import SQLAlchemyError
+
+csrf = CSRFProtect(app)  # if not already initialized
+
+@app.post("/training-submissions/<int:submission_id>/delete")
+def delete_training_submission(submission_id):
+    sub = TrainingSubmissions.query.get_or_404(submission_id)
+    try:
+        db.session.delete(sub)
+        db.session.commit()
+        flash(f"Deleted submission #{submission_id}", "success")
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash(f"Failed to delete submission #{submission_id}", "danger")
+    # Keep current page if present
+    page = request.args.get("page", type=int)
+    return redirect(url_for("training_results", page=page) if page else url_for("training_results"))
+
+from flask import request, redirect, url_for, flash
+from sqlalchemy.exc import SQLAlchemyError
+
+@app.post("/training-submissions/bulk-delete")
+def bulk_delete_training_submissions():
+    scope = request.form.get("scope")
+    page = request.form.get("page", type=int)
+
+    try:
+        if scope == "current_view":
+            # Recreate the same query used for the page and delete those rows.
+            # If you have filters, reuse them here the same way you built `rows`.
+            q = TrainingSubmissions.query
+
+            # Example: delete only the IDs currently displayed on this page.
+            # (This assumes you used .paginate(page=..., per_page=...))
+            per_page = 25  # match your list view's per_page
+            page_obj = q.paginate(page=page or 1, per_page=per_page)
+            ids = [r.id for r in page_obj.items]
+            if ids:
+                (TrainingSubmissions.query
+                   .filter(TrainingSubmissions.id.in_(ids))
+                   .delete(synchronize_session=False))
+        else:
+            flash("Unknown deletion scope.", "warning")
+            return redirect(url_for("training_results", page=page))
+        db.session.commit()
+        flash("Deleted all items on the current page.", "success")
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash("Bulk delete failed.", "danger")
+
+    return redirect(url_for("training_results", page=page))
 
 @app.route("/results/<int:user_id>")
 def results(user_id):
@@ -244,7 +305,14 @@ def save_employees():
     try:
         db.session.bulk_save_objects(rows)
         db.session.commit()
-        return jsonify({"status": "success", "count": len(rows)}), 200
+        
+    # API response — client can redirect using this URL
+        return jsonify({
+            "ok": True,
+            "count": len(rows),
+            "next_url": url_for("training_results", page=1)
+        }), 201
+
 
     except SQLAlchemyError as e:
         db.session.rollback()

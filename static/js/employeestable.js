@@ -94,7 +94,14 @@ if (!container4) {
       const result = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        successToast();
+      
+            if (result.next_url) {
+           // navigate
+                sessionStorage.setItem('toast', 'Employees saved successfully!');
+                window.location.assign(result.next_url);
+           // or: window.location = result.next_url;
+           // or: window.location.replace(result.next_url); // no back button to the current page
+            }
         // Optional: refresh data from server or update IDs for new rows
         // await reloadData();
       } else {
